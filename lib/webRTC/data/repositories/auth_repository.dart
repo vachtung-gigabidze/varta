@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:varta/data/datasources/remote_datasource.dart';
-import 'package:varta/domain/repositories/auth_repository.dart';
+import 'package:varta/webRTC/data/datasources/remote_datasource.dart';
+import 'package:varta/webRTC/domain/repositories/auth_repository.dart';
 import 'package:varta/utils/logger.dart';
 
 class AuthRepository implements AuthRepositoryInt {

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:varta/domain/interactors/webrtc_interactor.dart';
-import 'package:varta/presentation/pages/webrtc/webrtc_state.dart';
+import 'package:varta/webRTC/domain/interactors/webrtc_interactor.dart';
+import 'package:varta/webRTC/presentation/pages/webrtc/webrtc_state.dart';
 import 'package:varta/utils/logger.dart';
 
 class WebrtcCubit extends Cubit<WebrtcState> {

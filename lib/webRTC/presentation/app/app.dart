@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:varta/presentation/pages/webrtc/webrtc_page.dart';
+import 'package:varta/webRTC/presentation/pages/webrtc/webrtc_page.dart';
 
 class VideoStreamingApp extends StatelessWidget {
   const VideoStreamingApp({super.key});

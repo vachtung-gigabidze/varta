@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:varta/di/injector.dart';
-import 'package:varta/presentation/pages/webrtc/webrtc_cubit.dart';
-import 'package:varta/presentation/pages/webrtc/webrtc_state.dart';
+import 'package:varta/webRTC/di/injector.dart';
+import 'package:varta/webRTC/presentation/pages/webrtc/webrtc_cubit.dart';
+import 'package:varta/webRTC/presentation/pages/webrtc/webrtc_state.dart';
 
 class WebrtcPage extends StatefulWidget {
   WebrtcPage({Key? key}) : super(key: key);
@@ -143,15 +143,39 @@ class _WebrtcPageState extends State<WebrtcPage> {
     required bool cameraEnabled,
     required bool microEnabled,
   }) {
+    const previewSize = 0.3;
+    final previewWidth = MediaQuery.of(context).size.width * previewSize;
     return Stack(
       children: [
-        Positioned.fill(
-          child: RTCVideoView(
-            _localRenderer,
-            mirror: true,
-            objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        Positioned(
+          left: _defaultPadding,
+          top: _defaultPadding,
+          child: Container(
+            width: previewWidth,
+            height: previewWidth,
+            // height: previewWidth *
+            //     _localRenderer.videoWidth /
+            //     _localRenderer.videoHeight,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(color: Colors.blueAccent),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: RTCVideoView(
+              _localRenderer,
+              mirror: true,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+            ),
           ),
         ),
+        // Positioned.fill(
+        //   child: RTCVideoView(
+        //     _localRenderer,
+        //     mirror: true,
+        //     objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        //   ),
+        // ),
+
         Positioned(
           top: MediaQuery.of(context).viewPadding.top,
           left: 0,
@@ -191,31 +215,63 @@ class _WebrtcPageState extends State<WebrtcPage> {
     final previewWidth = MediaQuery.of(context).size.width * previewSize;
     return Stack(
       children: [
-        Positioned.fill(
-          child: RTCVideoView(
-            _remoteRenderer,
-            mirror: false,
-            objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        Positioned(
+          left: _defaultPadding,
+          top: _defaultPadding,
+          child: Column(
+            children: [
+              const Text('Это ты сам'),
+              Container(
+                width: previewWidth,
+                height: previewWidth,
+                // height: previewWidth *
+                //     _localRenderer.videoWidth /
+                //     _localRenderer.videoHeight,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: RTCVideoView(
+                  _remoteRenderer,
+                  mirror: true,
+                  objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                ),
+              ),
+            ],
           ),
         ),
+        // Positioned.fill(
+        //   child: RTCVideoView(
+        //     _remoteRenderer,
+        //     mirror: false,
+        //     objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        //   ),
+        // ),
         Positioned(
           right: _defaultPadding,
-          bottom: _defaultPadding,
-          child: Container(
-            width: previewWidth,
-            height: previewWidth *
-                _localRenderer.videoWidth /
-                _localRenderer.videoHeight,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(color: Colors.blueAccent),
-            ),
-            clipBehavior: Clip.hardEdge,
-            child: RTCVideoView(
-              _localRenderer,
-              mirror: true,
-              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-            ),
+          top: _defaultPadding,
+          child: Column(
+            children: [
+              const Text('Это другой игрок'),
+              Container(
+                width: previewWidth,
+                height: previewWidth,
+                // height: previewWidth *
+                //     _localRenderer.videoWidth /
+                //     _localRenderer.videoHeight,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: RTCVideoView(
+                  _localRenderer,
+                  mirror: true,
+                  objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                ),
+              ),
+            ],
           ),
         ),
         Positioned(

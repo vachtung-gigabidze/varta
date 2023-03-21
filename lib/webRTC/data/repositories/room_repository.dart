@@ -1,6 +1,6 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:varta/data/datasources/remote_datasource.dart';
-import 'package:varta/domain/repositories/room_repository.dart';
+import 'package:varta/webRTC/data/datasources/remote_datasource.dart';
+import 'package:varta/webRTC/domain/repositories/room_repository.dart';
 
 class RoomRepository implements RoomRepositoryInt {
   final RemoteDataSource _remoteDatasource;

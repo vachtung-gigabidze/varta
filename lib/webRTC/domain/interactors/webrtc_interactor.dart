@@ -1,5 +1,5 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:varta/domain/repositories/room_repository.dart';
+import 'package:varta/webRTC/domain/repositories/room_repository.dart';
 
 class WebrtcInteractor {
   final RoomRepositoryInt _roomRepository;
