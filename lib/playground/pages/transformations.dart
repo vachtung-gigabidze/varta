@@ -95,66 +95,68 @@ class _TransformationsDemoState extends State<TransformationsDemo>
   Widget build(BuildContext context) {
     // The scene is drawn by a CustomPaint, but user interaction is handled by
     // the InteractiveViewer parent widget.
-    Color? backgroundColor = const Color(0xFF42A5F5);
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('demo'),
-        //Text(GalleryLocalizations.of(context)!.demo2dTransformationsTitle),
-      ),
-      body: Container(
-        color: backgroundColor,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // Draw the scene as big as is available, but allow the user to
-            // translate beyond that to a visibleSize that's a bit bigger.
-            final viewportSize = Size(
-              constraints.maxWidth,
-              constraints.maxHeight,
-            );
+    Color? backgroundColor = const Color.fromARGB(255, 47, 182, 108);
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text('demo'),
+          //Text(GalleryLocalizations.of(context)!.demo2dTransformationsTitle),
+        ),
+        body: Container(
+          color: backgroundColor,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Draw the scene as big as is available, but allow the user to
+              // translate beyond that to a visibleSize that's a bit bigger.
+              final viewportSize = Size(
+                constraints.maxWidth,
+                constraints.maxHeight,
+              );
 
-            // Start the first render, start the scene centered in the viewport.
-            if (_homeMatrix == null) {
-              _homeMatrix = Matrix4.identity()
-                ..translate(
-                  viewportSize.width / 2 - _board.size.width / 2,
-                  viewportSize.height / 2 - _board.size.height / 2,
-                );
-              _transformationController.value = _homeMatrix!;
-            }
+              // Start the first render, start the scene centered in the viewport.
+              if (_homeMatrix == null) {
+                _homeMatrix = Matrix4.identity()
+                  ..translate(
+                    viewportSize.width / 2 - _board.size.width / 2,
+                    viewportSize.height / 2 - _board.size.height / 2,
+                  );
+                _transformationController.value = _homeMatrix!;
+              }
 
-            return ClipRect(
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapUp: _onTapUp,
-                  child: InteractiveViewer(
-                    key: _targetKey,
-                    transformationController: _transformationController,
-                    boundaryMargin: EdgeInsets.symmetric(
-                      horizontal: viewportSize.width,
-                      vertical: viewportSize.height,
-                    ),
-                    minScale: 0.01,
-                    onInteractionStart: _onScaleStart,
-                    child: SizedBox.expand(
-                      child: CustomPaint(
-                        size: _board.size,
-                        painter: _BoardPainter(
-                          board: _board,
+              return ClipRect(
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTapUp: _onTapUp,
+                    child: InteractiveViewer(
+                      key: _targetKey,
+                      transformationController: _transformationController,
+                      boundaryMargin: EdgeInsets.symmetric(
+                        horizontal: viewportSize.width,
+                        vertical: viewportSize.height,
+                      ),
+                      minScale: 0.01,
+                      onInteractionStart: _onScaleStart,
+                      child: SizedBox.expand(
+                        child: CustomPaint(
+                          size: _board.size,
+                          painter: _BoardPainter(
+                            board: _board,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
+        persistentFooterButtons: [resetButton, editButton],
       ),
-      persistentFooterButtons: [resetButton, editButton],
     );
   }
 
