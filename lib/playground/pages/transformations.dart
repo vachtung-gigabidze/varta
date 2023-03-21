@@ -15,11 +15,11 @@ class _TransformationsDemoState extends State<TransformationsDemo>
     with TickerProviderStateMixin {
   final GlobalKey _targetKey = GlobalKey();
   // The radius of a hexagon tile in pixels.
-  static const _kHexagonRadius = 16.0;
+  static const _kHexagonRadius = 50.0;
   // The margin between hexagons.
-  static const _kHexagonMargin = 1.0;
+  static const _kHexagonMargin = 5.0;
   // The radius of the entire board in hexagons, not including the center.
-  static const _kBoardRadius = 8;
+  static const _kBoardRadius = 2;
 
   Board _board = Board(
     boardRadius: _kBoardRadius,
@@ -95,7 +95,7 @@ class _TransformationsDemoState extends State<TransformationsDemo>
   Widget build(BuildContext context) {
     // The scene is drawn by a CustomPaint, but user interaction is handled by
     // the InteractiveViewer parent widget.
-    Color? backgroundColor = const Color.fromARGB(255, 47, 182, 108);
+    Color? backgroundColor = Color.fromARGB(255, 22, 139, 229);
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
