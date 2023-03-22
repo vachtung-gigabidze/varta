@@ -241,7 +241,7 @@ class _BoardPainter extends CustomPainter {
       canvas.drawVertices(vertices, BlendMode.color, Paint());
     }
 
-    //Draw background
+    //Draw background field
     drawBoardField(const BoardPoint(0, 3, color: Colors.black));
 
     board.forEach(drawBoardPoint);
