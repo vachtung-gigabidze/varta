@@ -9,10 +9,10 @@ import 'package:varta/utils/logger.dart';
 class WebrtcCubit extends Cubit<WebrtcState> {
   static final WebrtcState _initialState = WebrtcState();
 
-  static const Map<String, dynamic> _configuration = {
-    'iceServers': [
-      {
-        'urls': [
+  static const Map<String, dynamic> _configuration = <String, dynamic>{
+    'iceServers': <Map<String, List<String>>>[
+      <String, List<String>>{
+        'urls': <String>[
           'stun:stun1.l.google.com:19302',
           'stun:stun2.l.google.com:19302',
         ],
@@ -130,7 +130,7 @@ class WebrtcCubit extends Cubit<WebrtcState> {
 
   Future<void> enableUserMediaStream() async {
     var stream = await navigator.mediaDevices
-        .getUserMedia({'video': true, 'audio': true});
+        .getUserMedia(<String, dynamic>{'video': true, 'audio': true});
     emit(
       state.copyWith(
         localStream: stream,

@@ -15,11 +15,11 @@ class _TransformationsDemoState extends State<TransformationsDemo>
     with TickerProviderStateMixin {
   final GlobalKey _targetKey = GlobalKey();
   // The radius of a hexagon tile in pixels.
-  static const _kHexagonRadius = 50.0;
+  static const double _kHexagonRadius = 50.0;
   // The margin between hexagons.
-  static const _kHexagonMargin = 5.0;
+  static const double _kHexagonMargin = 5.0;
   // The radius of the entire board in hexagons, not including the center.
-  static const _kBoardRadius = 2;
+  static const int _kBoardRadius = 2;
 
   Board _board = Board(
     boardRadius: _kBoardRadius,
@@ -72,12 +72,12 @@ class _TransformationsDemoState extends State<TransformationsDemo>
   }
 
   void _onTapUp(TapUpDetails details) {
-    final renderBox =
+    final RenderBox renderBox =
         _targetKey.currentContext!.findRenderObject() as RenderBox;
-    final offset =
+    final Offset offset =
         details.globalPosition - renderBox.localToGlobal(Offset.zero);
-    final scenePoint = _transformationController.toScene(offset);
-    final boardPoint = _board.pointToBoardPoint(scenePoint);
+    final Offset scenePoint = _transformationController.toScene(offset);
+    final BoardPoint? boardPoint = _board.pointToBoardPoint(scenePoint);
     setState(() {
       _board = _board.copyWithSelected(boardPoint);
     });
@@ -107,10 +107,10 @@ class _TransformationsDemoState extends State<TransformationsDemo>
         body: Container(
           color: backgroundColor,
           child: LayoutBuilder(
-            builder: (context, constraints) {
+            builder: (BuildContext context, BoxConstraints constraints) {
               // Draw the scene as big as is available, but allow the user to
               // translate beyond that to a visibleSize that's a bit bigger.
-              final viewportSize = Size(
+              final Size viewportSize = Size(
                 constraints.maxWidth,
                 constraints.maxHeight,
               );
@@ -181,7 +181,7 @@ class _TransformationsDemoState extends State<TransformationsDemo>
         }
         showModalBottomSheet<Widget>(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               return Container(
                 width: double.infinity,
                 height: 150,
@@ -223,12 +223,26 @@ class _BoardPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     void drawBoardPoint(BoardPoint? boardPoint) {
-      final color = boardPoint!.color.withOpacity(
+      final Color color = boardPoint!.color.withOpacity(
         board.selected == boardPoint ? 0.7 : 1,
       );
-      final vertices = board.getVerticesForBoardPoint(boardPoint, color);
+      final Vertices vertices =
+          board.getVerticesForBoardPoint(boardPoint, color);
       canvas.drawVertices(vertices, BlendMode.color, Paint());
     }
+
+    void drawBoardField(BoardPoint? boardPoint) {
+      if (boardPoint == null) {
+        return;
+      }
+      const Color color = Colors.black;
+      final Vertices vertices =
+          board.getVerticesForBoardField(boardPoint, color);
+      canvas.drawVertices(vertices, BlendMode.color, Paint());
+    }
+
+    //Draw background
+    drawBoardField(const BoardPoint(0, 3, color: Colors.black));
 
     board.forEach(drawBoardPoint);
   }
@@ -244,6 +258,7 @@ class _BoardPainter extends CustomPainter {
 // it. Iterable so that all BoardPoints on the board can be iterated over.
 @immutable
 class Board extends Object with IterableMixin<BoardPoint?> {
+  /// Поле
   Board({
     required this.boardRadius,
     required this.hexagonRadius,
@@ -256,9 +271,9 @@ class Board extends Object with IterableMixin<BoardPoint?> {
     // Set up the positions for the center hexagon where the entire board is
     // centered on the origin.
     // Start point of hexagon (top vertex).
-    final hexStart = Point<double>(0, -hexagonRadius);
-    final hexagonRadiusPadded = hexagonRadius - hexagonMargin;
-    final centerToFlat = sqrt(3) / 2 * hexagonRadiusPadded;
+    final Point<double> hexStart = Point<double>(0, -hexagonRadius);
+    final double hexagonRadiusPadded = hexagonRadius - hexagonMargin;
+    final double centerToFlat = sqrt(3) / 2 * hexagonRadiusPadded;
     positionsForHexagonAtOrigin.addAll(<Offset>[
       Offset(hexStart.x, hexStart.y),
       Offset(hexStart.x + centerToFlat, hexStart.y + 0.5 * hexagonRadiusPadded),
@@ -275,7 +290,7 @@ class Board extends Object with IterableMixin<BoardPoint?> {
       _boardPoints.addAll(boardPoints);
     } else {
       // Generate boardPoints for a fresh board.
-      var boardPoint = _getNextBoardPoint(null);
+      BoardPoint? boardPoint = _getNextBoardPoint(null);
       while (boardPoint != null) {
         _boardPoints.add(boardPoint);
         boardPoint = _getNextBoardPoint(boardPoint);
@@ -319,7 +334,7 @@ class Board extends Object with IterableMixin<BoardPoint?> {
       return BoardPoint(-boardRadius, 0);
     }
 
-    final rRange = _getRRangeForQ(boardPoint.q);
+    final _Range rRange = _getRRangeForQ(boardPoint.q);
 
     // If at or after the last element.
     if (boardPoint.q >= boardRadius && boardPoint.r >= rRange.max) {
@@ -337,14 +352,14 @@ class Board extends Object with IterableMixin<BoardPoint?> {
 
   // Check if the board point is actually on the board.
   bool _validateBoardPoint(BoardPoint boardPoint) {
-    const center = BoardPoint(0, 0);
-    final distanceFromCenter = getDistance(center, boardPoint);
+    const BoardPoint center = BoardPoint(0, 0);
+    final int distanceFromCenter = getDistance(center, boardPoint);
     return distanceFromCenter <= boardRadius;
   }
 
   // Get the size in pixels of the entire board.
   Size get size {
-    final centerToFlat = sqrt(3) / 2 * hexagonRadius;
+    final double centerToFlat = sqrt(3) / 2 * hexagonRadius;
     return Size(
       (boardRadius * 2 + 1) * centerToFlat * 2,
       2 * (hexagonRadius + boardRadius * 1.5 * hexagonRadius),
@@ -353,8 +368,8 @@ class Board extends Object with IterableMixin<BoardPoint?> {
 
   // Get the distance between two BoardPoints.
   static int getDistance(BoardPoint a, BoardPoint b) {
-    final a3 = a.cubeCoordinates;
-    final b3 = b.cubeCoordinates;
+    final Vector3 a3 = a.cubeCoordinates;
+    final Vector3 b3 = b.cubeCoordinates;
     return ((a3.x - b3.x).abs() + (a3.y - b3.y).abs() + (a3.z - b3.z).abs()) ~/
         2;
   }
@@ -363,11 +378,11 @@ class Board extends Object with IterableMixin<BoardPoint?> {
   // the center of the board in both coordinate systems. If no BoardPoint at the
   // location, return null.
   BoardPoint? pointToBoardPoint(Offset point) {
-    final pointCentered = Offset(
+    final Offset pointCentered = Offset(
       point.dx - size.width / 2,
       point.dy - size.height / 2,
     );
-    final boardPoint = BoardPoint(
+    final BoardPoint boardPoint = BoardPoint(
       ((sqrt(3) / 3 * pointCentered.dx - 1 / 3 * pointCentered.dy) /
               hexagonRadius)
           .round(),
@@ -378,7 +393,7 @@ class Board extends Object with IterableMixin<BoardPoint?> {
       return null;
     }
 
-    return _boardPoints.firstWhere((boardPointI) {
+    return _boardPoints.firstWhere((BoardPoint boardPointI) {
       return boardPointI.q == boardPoint.q && boardPointI.r == boardPoint.r;
     });
   }
@@ -395,11 +410,50 @@ class Board extends Object with IterableMixin<BoardPoint?> {
 
   // Get Vertices that can be drawn to a Canvas for the given BoardPoint.
   Vertices getVerticesForBoardPoint(BoardPoint boardPoint, Color color) {
-    final centerOfHexZeroCenter = boardPointToPoint(boardPoint);
+    final Point<double> centerOfHexZeroCenter = boardPointToPoint(boardPoint);
 
-    final positions = positionsForHexagonAtOrigin.map((offset) {
+    final List<Offset> positions =
+        positionsForHexagonAtOrigin.map((Offset offset) {
       return offset.translate(centerOfHexZeroCenter.x, centerOfHexZeroCenter.y);
     }).toList();
+
+    return Vertices(
+      VertexMode.triangleFan,
+      positions,
+      colors: List<Color>.filled(positions.length, color),
+    );
+  }
+
+  // Get Vertices that can be drawn to a Canvas for the given BoardField.
+  Vertices getVerticesForBoardField(BoardPoint boardPoint, Color color) {
+    const Point<double> centerOfHexZeroCenter =
+        Point<double>(150, 150); //boardPointToPoint(boardPoint);
+
+    const double x = 215.0;
+    const double y = 200.0;
+    const double hexagonRadiusPadded = 235.0;
+    const double centerToFlat = 200.0;
+    final List<Offset> positions = <Offset>[
+      for (int a = 0; a < 6; a++)
+        Offset(
+          x + hexagonRadiusPadded * cos(a * 60 * pi / 180.0),
+          y + hexagonRadiusPadded * sin(a * 60 * pi / 180.0),
+        )
+
+      // Offset(x, y),
+      // Offset(x + centerToFlat, y + 0.5 * hexagonRadiusPadded),
+      // Offset(x + centerToFlat, y + 1.5 * hexagonRadiusPadded),
+      // Offset(x + centerToFlat, y + 1.5 * hexagonRadiusPadded),
+      // Offset(x, y + 2 * hexagonRadiusPadded),
+      // Offset(x, y + 2 * hexagonRadiusPadded),
+      // Offset(x - centerToFlat, y + 1.5 * hexagonRadiusPadded),
+      // Offset(x - centerToFlat, y + 1.5 * hexagonRadiusPadded),
+      // Offset(x - centerToFlat, y + 0.5 * hexagonRadiusPadded),
+    ];
+
+    //     positionsForHexagonAtOrigin.map((Offset offset) {
+    //   return offset.translate(centerOfHexZeroCenter.x, centerOfHexZeroCenter.y);
+    // }).toList();
 
     return Vertices(
       VertexMode.triangleFan,
@@ -413,7 +467,7 @@ class Board extends Object with IterableMixin<BoardPoint?> {
     if (selected == boardPoint) {
       return this;
     }
-    final nextBoard = Board(
+    final Board nextBoard = Board(
       boardRadius: boardRadius,
       hexagonRadius: hexagonRadius,
       hexagonMargin: hexagonMargin,
@@ -425,17 +479,19 @@ class Board extends Object with IterableMixin<BoardPoint?> {
 
   // Return a new board where boardPoint has the given color.
   Board copyWithBoardPointColor(BoardPoint boardPoint, Color color) {
-    final nextBoardPoint = boardPoint.copyWithColor(color);
-    final boardPointIndex = _boardPoints.indexWhere((boardPointI) =>
-        boardPointI.q == boardPoint.q && boardPointI.r == boardPoint.r);
+    final BoardPoint nextBoardPoint = boardPoint.copyWithColor(color);
+    final int boardPointIndex = _boardPoints.indexWhere(
+        (BoardPoint boardPointI) =>
+            boardPointI.q == boardPoint.q && boardPointI.r == boardPoint.r);
 
     if (elementAt(boardPointIndex) == boardPoint && boardPoint.color == color) {
       return this;
     }
 
-    final nextBoardPoints = List<BoardPoint>.from(_boardPoints);
+    final List<BoardPoint> nextBoardPoints =
+        List<BoardPoint>.from(_boardPoints);
     nextBoardPoints[boardPointIndex] = nextBoardPoint;
-    final selectedBoardPoint =
+    final BoardPoint? selectedBoardPoint =
         boardPoint == selected ? nextBoardPoint : selected;
     return Board(
       boardRadius: boardRadius,
@@ -487,11 +543,14 @@ class _Range {
 // Axial coordinates use two integers, q and r, to locate a hexagon on a grid.
 // https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 @immutable
+
+/// Рисует ячейку
 class BoardPoint {
+  /// Конструктор
   const BoardPoint(
     this.q,
     this.r, {
-    this.color = const Color(0xFFCDCDCD),
+    this.color = const Color.fromARGB(255, 14, 153, 37),
   });
 
   final int q;
