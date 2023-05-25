@@ -1,7 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:varta/playground/app.dart';
-import 'package:varta/playground/pages/transformations.dart';
+// import 'package:varta/playground/app.dart';
+import 'package:varta/playground/pages/varta_game.dart';
 // import 'package:varta/webRTC/di/injector.dart';
 // import 'package:varta/webRTC/domain/repositories/auth_repository.dart';
 // import 'package:varta/webRTC/firebase_options.dart';
@@ -17,5 +17,5 @@ void main() async {
   // await i.get<AuthRepositoryInt>().signInAnonymously();
   // runApp(const VideoStreamingApp());
   // runApp(const VartaApp());
-  runApp(const TransformationsDemo());
+  runApp(const VartaGame());
 }

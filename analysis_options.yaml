@@ -18,7 +18,7 @@ analyzer:
 
 linter:
   rules:
-    - public_member_api_docs
+    # - public_member_api_docs
     - always_declare_return_types
     - always_require_non_null_named_parameters
     - annotate_overrides
